@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>作戦：レーザーで砂粒まで粉砕</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#000}canvas{display:block}</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const c = document.getElementById('c'), x = c.getContext('2d');
+let W, H, u, gy;
+function rs() { W = c.width = innerWidth; H = c.height = innerHeight; u = Math.min(W, H) / 100; gy = H * 0.82; }
+rs(); addEventListener('resize', rs);
+const t0 = performance.now();
+const T_OVERRIDE = Number(new URLSearchParams(location.search).get('at'));
+const stars = Array.from({ length: 160 }, () => [Math.random(), Math.random() * 0.75, Math.random() * 1.4 + 0.3]);
+const lerp = (a, b, k) => a + (b - a) * k, cl = (v) => Math.max(0, Math.min(1, v));
+const easeIn = (k) => k * k, easeOut = (k) => 1 - (1 - k) * (1 - k);
+
+function bg(t, flash = 0, ground = '#1d2b1f') {
+  const g = x.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#050818'); g.addColorStop(1, '#2b1d3d');
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.fillStyle = '#fff';
+  for (const [a, b, r] of stars) { x.globalAlpha = 0.45 + 0.45 * Math.sin(t * 3 + a * 60); x.fillRect(a * W, b * H, r, r); }
+  x.globalAlpha = 1;
+  x.fillStyle = ground; x.fillRect(0, gy, W, H - gy);
+  x.fillStyle = 'rgba(255,255,255,.06)'; x.fillRect(0, gy, W, 0.5 * u);
+  if (flash > 0) { x.fillStyle = `rgba(255,255,255,${flash})`; x.fillRect(0, 0, W, H); }
+}
+
+function label(s, y, size, col = '#fff') {
+  x.font = `900 ${size * u}px system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif`;
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.lineJoin = 'round'; x.lineWidth = size * u / 4; x.strokeStyle = '#000'; x.strokeText(s, W / 2, y);
+  x.fillStyle = col; x.fillText(s, W / 2, y);
+}
+
+function title(s) { label(s, 7 * u, 5.5, '#ffd24a'); }
+
+function pop(s, px, py, size, col, age) {
+  const k = cl(age / 0.25), sc = 0.5 + 0.5 * easeOut(k) + 0.1 * Math.sin(age * 20) * Math.max(0, 1 - age);
+  x.save(); x.translate(px, py); x.scale(sc, sc);
+  x.font = `900 ${size * u}px system-ui, sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.lineWidth = size * u / 4; x.strokeStyle = '#000'; x.strokeText(s, 0, 0); x.fillStyle = col; x.fillText(s, 0, 0);
+  x.restore();
+}
+
+// 棒人間。arms: [[shoulder->hand 角度, 長さ], ...]
+function body(hx, squat = 0) {
+  const hy = gy, k = squat * 4 * u;
+  x.strokeStyle = '#fff'; x.lineWidth = 1.3 * u; x.lineCap = 'round'; x.lineJoin = 'round';
+  x.beginPath(); x.arc(hx, hy - 26 * u + k, 4 * u, 0, 7); x.stroke();
+  x.beginPath(); x.moveTo(hx, hy - 22 * u + k); x.lineTo(hx, hy - 10 * u + k);
+  x.lineTo(hx - 4 * u - squat * 2 * u, hy - 5 * u + k / 2); x.lineTo(hx - 4 * u, hy);
+  x.moveTo(hx, hy - 10 * u + k); x.lineTo(hx + 4 * u + squat * 2 * u, hy - 5 * u + k / 2); x.lineTo(hx + 4 * u, hy);
+  x.stroke();
+  return { sx: hx, sy: hy - 19 * u + k, headY: hy - 26 * u + k };
+}
+function arm(sx, sy, ex, ey) { x.strokeStyle = '#fff'; x.lineWidth = 1.3 * u; x.beginPath(); x.moveTo(sx, sy); x.lineTo(ex, ey); x.stroke(); }
+
+function meteor(mx, my, r, vx, vy, fire = 1, rock = [107, 80, 64]) {
+  if (fire > 0) {
+    const L = Math.hypot(vx, vy) || 1, tx = -vx / L, ty = -vy / L;
+    for (let i = 14; i > 0; i--) {
+      x.fillStyle = `rgba(255,${100 + i * 9},40,${0.07 * fire})`;
+      x.beginPath(); x.arc(mx + tx * r * i * 0.55, my + ty * r * i * 0.55, r * (1 + i * 0.07), 0, 7); x.fill();
+    }
+    x.fillStyle = `rgba(255,170,60,${0.35 * fire})`; x.beginPath(); x.arc(mx, my, r * 1.45, 0, 7); x.fill();
+  }
+  x.fillStyle = `rgb(${rock})`; x.beginPath(); x.arc(mx, my, r, 0, 7); x.fill();
+  x.fillStyle = 'rgba(0,0,0,.28)';
+  for (const [a, b, s] of [[-0.35, -0.2, 0.26], [0.38, 0.12, 0.19], [-0.08, 0.45, 0.15], [0.2, -0.5, 0.12]]) {
+    x.beginPath(); x.arc(mx + a * r, my + b * r, s * r, 0, 7); x.fill();
+  }
+  if (fire > 0) { x.fillStyle = `rgba(255,120,30,${0.35 * fire})`; x.beginPath(); x.arc(mx, my, r, 0, 7); x.fill(); }
+}
+
+function rng(seed) { return () => ((seed = (seed * 16807) % 2147483647) / 2147483647); }
+
+function loop(len, draw) {
+  function frame(now) {
+    const t = T_OVERRIDE >= 0 && new URLSearchParams(location.search).has('at') ? T_OVERRIDE : ((now - t0) / 1000) % len;
+    if (c.width !== innerWidth || c.height !== innerHeight) rs();
+    x.save(); draw(t); x.restore();
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+// 人格：天才科学者 — レーザーで砂粒まで粉砕
+const R = rng(42), sand = Array.from({ length: 420 }, () => [R() * 2 - 1, R() * 2 - 1, R(), R()]);
+const chips = Array.from({ length: 40 }, () => [R() * 7, R() * 0.8 + 0.3, R()]);
+loop(20, (t) => {
+  const hx = W * 0.4, burst = 11;
+  bg(t, t > burst ? Math.max(0, 0.6 - (t - burst) * 2) : 0);
+  title('作戦：レーザーで砂粒まで粉砕');
+
+  const k = cl(t / burst), mx = lerp(W * 0.85, hx + 6 * u, easeIn(k) * 0.8), my = lerp(-20 * u, gy - 55 * u, easeIn(k) * 0.8 + 0.2 * k);
+  const r = (t < 5 ? lerp(5, 13, t / 5) : lerp(13, 1.5, cl((t - 5) / 6))) * u;
+
+  // 砂山
+  if (t > burst) {
+    const h = cl((t - burst - 1) / 4) * 7 * u;
+    x.fillStyle = '#e8c878'; x.beginPath(); x.ellipse(hx + 6 * u, gy, h * 3.2, h, 0, Math.PI, 0); x.fill();
+  }
+  const p = body(hx);
+  arm(p.sx, p.sy, hx + 7 * u, p.sy - 4 * u); arm(p.sx, p.sy, hx - 5 * u, p.sy + 6 * u);
+  // ゴーグル
+  x.fillStyle = '#ff3b5c'; x.fillRect(hx - 3.5 * u, p.headY - 1.5 * u, 7.5 * u, 2.4 * u);
+
+  if (t < burst) {
+    meteor(mx, my, r, hx - W * 0.85, gy + 20 * u, 1);
+    if (t > 5) {
+      const ex = hx + 2 * u, ey = p.headY - 0.3 * u, w = (1.2 + 0.4 * Math.sin(t * 40)) * u;
+      for (const [col, lw] of [['rgba(255,40,80,.35)', w * 3], ['#ff3b5c', w], ['#fff', w / 3]]) {
+        x.strokeStyle = col; x.lineWidth = lw; x.beginPath(); x.moveTo(ex, ey); x.lineTo(mx, my); x.stroke();
+      }
+      for (const [ang, sp, ph] of chips) {
+        const s = ((t * 1.5 + ph) % 1);
+        x.fillStyle = `rgba(255,200,120,${1 - s})`;
+        x.fillRect(mx + Math.cos(ang) * s * 14 * u * sp, my + Math.sin(ang) * s * 14 * u * sp, 0.8 * u, 0.8 * u);
+      }
+      pop('ビィィィ！', W * 0.72, H * 0.3, 5, '#ff7a90', t - 5);
+    }
+    if (t < 5 && t > 1.5) pop('計算どおり', W * 0.22, gy - 42 * u, 4.5, '#fff', t - 1.5);
+  } else {
+    // 砂粒がキラキラ降ってくる
+    const s = t - burst, bx = hx + 6 * u, by = gy - 55 * u;
+    for (const [dx, dy, sp, tw] of sand) {
+      const px = bx + dx * (6 + s * 10 * sp) * u, py = Math.min(gy - 0.3 * u, by + dy * 5 * u + s * s * (2 + sp * 3) * u + s * 3 * u);
+      x.fillStyle = tw > 0.85 && Math.sin(t * 12 + dx * 50) > 0 ? '#fff' : '#f0d58a';
+      x.fillRect(px, py, 0.6 * u, 0.6 * u);
+    }
+    pop('サラサラ…', W / 2, H * 0.22, 5.5, '#f0d58a', s);
+    if (s > 3.5) pop('無傷！', W / 2, H * 0.36, 11, '#5dff8a', s - 3.5);
+    if (s > 5) pop('（ついでに砂浜ができた）', W / 2, H * 0.49, 4, '#fff', s - 5);
+  }
+});
+</script>
+</body>
+</html>

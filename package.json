@@ -1,0 +1,14 @@
+{
+  "name": "ai-arena",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "同じお題を複数のAIに作らせて並べて比べる競作アリーナ",
+  "scripts": {
+    "generate": "node generate.mjs",
+    "serve": "node serve.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

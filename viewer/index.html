@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI競作アリーナ</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: #0b0d12; color: #eef; font-family: system-ui, "Hiragino Sans", "Noto Sans JP", sans-serif; }
+  body { display: grid; place-items: center; }
+  #stage { display: flex; flex-direction: column; background: #0b0d12; width: min(100vw, 100vh * 16 / 9); height: min(100vh, 100vw * 9 / 16); }
+  body.portrait #stage { width: min(100vw, 100vh * 9 / 16); height: min(100vh, 100vw * 16 / 9); }
+  header { padding: 1.2vmin 2vmin; display: flex; align-items: center; gap: 2vmin; }
+  header h1 { margin: 0; font-size: 3vmin; flex: 1; }
+  header h1 small { display: block; font-size: 1.8vmin; opacity: .7; font-weight: normal; }
+  #timer { font: bold 3vmin ui-monospace, monospace; color: #ffcf5a; }
+  #grid { flex: 1; display: grid; gap: .8vmin; padding: 0 .8vmin .8vmin; min-height: 0; }
+  .tile { position: relative; border-radius: 1vmin; overflow: hidden; background: #000; outline: 2px solid #223; }
+  .tile iframe { width: 100%; height: 100%; border: 0; display: block; background: #000; }
+  .label { position: absolute; left: 0; bottom: 0; right: 0; padding: .6vmin 1vmin; font-size: 2vmin; font-weight: bold;
+           background: linear-gradient(transparent, rgba(0,0,0,.85)); pointer-events: none; }
+  .label small { font-weight: normal; opacity: .7; margin-left: .8vmin; }
+  .controls { position: fixed; right: 12px; top: 12px; display: flex; gap: 6px; }
+  .controls button { background: #223; color: #eef; border: 1px solid #445; border-radius: 6px; padding: 6px 10px; cursor: pointer; }
+  body.clean .controls { display: none; }
+  #msg { padding: 4vmin; text-align: center; opacity: .8; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <header>
+    <h1 id="title">AI競作アリーナ<small id="sub"></small></h1>
+    <div id="timer">00.0</div>
+  </header>
+  <div id="grid"><div id="msg">読み込み中…</div></div>
+</div>
+<div class="controls">
+  <button id="restart">▶ 同時スタート</button>
+  <button id="orient">縦/横</button>
+  <button id="clean">UIを隠す (H)</button>
+</div>
+<script>
+const params = new URLSearchParams(location.search);
+const topic = params.get('topic') || 'meteor';
+if (!/^[\w-]+$/.test(topic)) throw new Error('topic は英数字・_・- のみ');
+const TITLES = { meteor: '隕石から無傷で身を守れ（回避・隠れる禁止）' };
+const grid = document.getElementById('grid');
+let entries = [], startedAt = 0;
+
+document.getElementById('sub').textContent = 'お題：' + (TITLES[topic] || topic);
+if (params.get('layout') === 'portrait') document.body.classList.add('portrait');
+
+fetch(`../works/${topic}/manifest.json`, { cache: 'no-store' })
+  .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+  .then(m => { entries = m.entries; render(); })
+  .catch(() => { grid.innerHTML = `<div id="msg">works/${esc(topic)}/manifest.json がありません。<br>先に <code>npm run generate ${esc(topic)}</code> を実行してください。</div>`; });
+
+function render() {
+  const portrait = document.body.classList.contains('portrait');
+  const n = entries.length;
+  const cols = portrait ? (n <= 2 ? 1 : 2) : n <= 2 ? n : n <= 4 ? 2 : n <= 6 ? 3 : 4;
+  const rows = Math.ceil(n / cols);
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+  grid.innerHTML = '';
+  for (const e of entries) {
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    // AIが書いたコードなので sandbox で隔離（スクリプトのみ許可）
+    tile.innerHTML = `<iframe sandbox="allow-scripts" loading="eager"></iframe><div class="label"></div>`;
+    tile.querySelector('.label').innerHTML = `${esc(e.name)}<small>${esc(e.model)}${e.ok ? '' : ' / 失敗'}</small>`;
+    grid.appendChild(tile);
+  }
+  restart();
+}
+
+function restart() {
+  // レイアウト確定後に読み込む（サイズ0のまま起動してキャンバスが空になる作品があるため）
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const src = entries.map(e => `../works/${topic}/${e.file}?t=${Date.now()}`);
+    grid.querySelectorAll('iframe').forEach((f, i) => { f.src = src[i]; });
+    startedAt = performance.now();
+  }));
+}
+
+(function tick() {
+  if (startedAt) document.getElementById('timer').textContent = ((performance.now() - startedAt) / 1000).toFixed(1).padStart(4, '0');
+  requestAnimationFrame(tick);
+})();
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]); }
+
+document.getElementById('restart').onclick = restart;
+document.getElementById('orient').onclick = () => { document.body.classList.toggle('portrait'); render(); };
+document.getElementById('clean').onclick = () => document.body.classList.toggle('clean');
+addEventListener('keydown', e => {
+  if (e.key === 'h' || e.key === 'H') document.body.classList.toggle('clean');
+  if (e.key === 'r' || e.key === 'R' || e.key === ' ') restart();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "topic": "meteor",
+  "createdAt": "2026-09-28T00:00:00Z",
+  "note": "APIを使わずClaudeが4つの人格で制作したサンプル。npm run generate meteor で上書きされます。",
+  "entries": [
+    {
+      "id": "01-slugger",
+      "name": "熱血スラッガー",
+      "model": "Claude（人格による競作・手書きサンプル）",
+      "file": "01-slugger.html",
+      "ok": true
+    },
+    {
+      "id": "02-budoka",
+      "name": "無口な武道家",
+      "model": "Claude（人格による競作・手書きサンプル）",
+      "file": "02-budoka.html",
+      "ok": true
+    },
+    {
+      "id": "03-scientist",
+      "name": "天才科学者",
+      "model": "Claude（人格による競作・手書きサンプル）",
+      "file": "03-scientist.html",
+      "ok": true
+    },
+    {
+      "id": "04-negotiator",
+      "name": "おしゃべりな交渉人",
+      "model": "Claude（人格による競作・手書きサンプル）",
+      "file": "04-negotiator.html",
+      "ok": true
+    }
+  ]
+}

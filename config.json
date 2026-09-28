@@ -1,0 +1,47 @@
+{
+  "_comment": "enabled: true の参加者だけ生成します。どれも OpenAI 互換の /chat/completions で呼び出します。モデル名は提供元で変わるので、動かないときは各サービスのモデル一覧で確認してください。",
+  "maxTokens": 8000,
+  "temperature": 0.8,
+  "timeoutSec": 300,
+  "participants": [
+    {
+      "name": "Qwen Coder (ローカル)",
+      "enabled": true,
+      "baseURL": "http://localhost:11434/v1",
+      "model": "qwen2.5-coder:14b"
+    },
+    {
+      "name": "Gemma (ローカル)",
+      "enabled": true,
+      "baseURL": "http://localhost:11434/v1",
+      "model": "gemma3:12b"
+    },
+    {
+      "name": "Llama (ローカル)",
+      "enabled": true,
+      "baseURL": "http://localhost:11434/v1",
+      "model": "llama3.1:8b"
+    },
+    {
+      "name": "Gemini",
+      "enabled": false,
+      "baseURL": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "model": "gemini-2.5-flash",
+      "apiKeyEnv": "GEMINI_API_KEY"
+    },
+    {
+      "name": "Groq (Llama 70B)",
+      "enabled": false,
+      "baseURL": "https://api.groq.com/openai/v1",
+      "model": "llama-3.3-70b-versatile",
+      "apiKeyEnv": "GROQ_API_KEY"
+    },
+    {
+      "name": "OpenRouter 無料枠",
+      "enabled": false,
+      "baseURL": "https://openrouter.ai/api/v1",
+      "model": "deepseek/deepseek-chat-v3-0324:free",
+      "apiKeyEnv": "OPENROUTER_API_KEY"
+    }
+  ]
+}
