@@ -45,7 +45,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* ---------- header ---------- */
 header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.brand{display:flex;align-items:baseline;gap:10px}
+.brand{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .brand h1{font-size:22px;font-weight:900;letter-spacing:.02em}
 .brand span{font-size:12px;color:var(--ink-3);letter-spacing:.08em}
 .controls{display:flex;gap:6px;flex-wrap:wrap}
@@ -64,39 +64,44 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;fl
 
 /* ---------- layout ---------- */
 .main{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:16px;align-items:start}
-.main>.panel:first-child{position:sticky;top:16px}
-@media (max-width:820px){.main>.panel:first-child{position:static}}
-@media (max-width:820px){.main{grid-template-columns:1fr}}
+.side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+@media (max-width:820px){.main{grid-template-columns:1fr}.side{position:static}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
 .panel-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px 0}
 .panel-head h2{font-size:13px;font-weight:700;color:var(--ink-2);letter-spacing:.1em}
 .panel-head small{font-size:12px;color:var(--ink-3)}
 
 /* ---------- players ---------- */
-.players{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px}
-@media (max-width:820px){.players{grid-template-columns:repeat(3,1fr)}}
+.players{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px}
 @media (max-width:460px){.players{grid-template-columns:repeat(2,1fr)}}
-.card{position:relative;display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--line);border-radius:14px;background:var(--panel);transition:border-color .25s,transform .25s,opacity .4s,box-shadow .25s}
+.card{position:relative;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid var(--line);border-radius:14px;background:var(--panel);transition:border-color .25s,transform .25s,opacity .4s,box-shadow .25s}
 .card.speaking{border-color:var(--pc);box-shadow:0 0 0 4px color-mix(in srgb,var(--pc) 18%,transparent);transform:translateY(-2px)}
 .card.dead{opacity:.45}
 .card.dead .avatar{filter:grayscale(1)}
-.avatar{flex:none;width:40px;height:40px;border-radius:50%;background:var(--pc);color:#fff;display:grid;place-items:center;font-weight:900;font-size:17px}
+.avatar{flex:none;width:36px;height:36px;border-radius:50%;background:var(--pc);color:#fff;display:grid;place-items:center;font-weight:900;font-size:16px}
 .card .meta{min-width:0;flex:1}
-.card .name{font-weight:700;font-size:15px;display:flex;align-items:center;gap:6px}
-.card .sub{font-size:11px;color:var(--ink-3);display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.card .name{font-weight:700;font-size:14.5px}
+.card .sub{display:flex;gap:3px;flex-wrap:wrap;margin-top:2px}
 .tag{font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;line-height:1.6;white-space:nowrap}
 .tag.claim{background:var(--accent-soft);color:var(--accent)}
 .tag.role-v{background:var(--village-soft);color:var(--village)}
 .tag.role-w{background:var(--wolf-soft);color:var(--wolf)}
 .tag.voted{background:var(--panel-2);color:var(--ink-2)}
-.tag.exec{background:var(--wolf);color:#fff}
+.tag.dead{background:var(--ink-2);color:var(--panel)}
 .role{display:none}
 body.show-roles .role{display:inline-block}
 .votes-in{position:absolute;top:-8px;right:-6px;min-width:24px;height:24px;border-radius:12px;background:var(--wolf);color:#fff;font-weight:900;font-size:13px;display:none;place-items:center;padding:0 6px;box-shadow:var(--shadow)}
 .votes-in.on{display:grid;animation:pop .35s ease}
 
-.legend{padding:0 18px 16px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-3)}
-.legend b{font-weight:700;color:var(--ink-2)}
+/* ---------- role deck ---------- */
+.deck{display:flex;flex-wrap:wrap;gap:6px;padding:12px 18px 6px}
+.rc{font-size:12px;font-weight:700;padding:4px 10px;border-radius:8px;border:1.5px solid transparent}
+.rc.v{background:var(--village-soft);color:var(--village)}
+.rc.w{background:var(--wolf-soft);color:var(--wolf)}
+.rc.hidden{background:var(--panel-2);color:var(--ink-3);border:1.5px dashed var(--ink-3)}
+.rc.hidden.open{border-style:solid;border-color:var(--accent);background:var(--accent-soft);color:var(--accent);animation:pop .4s ease}
+.deck-note{padding:0 18px 16px;font-size:12px;color:var(--ink-3)}
+.deck-note b{color:var(--ink-2)}
 
 /* ---------- plaza (log) ---------- */
 .plaza{display:flex;flex-direction:column;min-height:420px;max-height:calc(100vh - 190px)}
@@ -107,7 +112,6 @@ body.show-roles .role{display:inline-block}
 .msg .avatar{width:32px;height:32px;font-size:14px}
 .bubble{background:var(--panel-2);border-radius:4px 14px 14px 14px;padding:8px 12px;max-width:100%}
 .bubble .who{font-size:12px;font-weight:700;color:var(--ink-2);display:flex;gap:6px;align-items:center}
-.bubble .who em{font-style:normal;font-weight:500;color:var(--ink-3)}
 .bubble p{font-size:14.5px}
 .result{display:inline-flex;align-items:center;gap:4px;font-weight:700;padding:0 6px;border-radius:6px}
 .result.w{background:var(--wolf-soft);color:var(--wolf)}
@@ -116,6 +120,7 @@ body.show-roles .role{display:inline-block}
 .sys.night{color:var(--night);border-color:color-mix(in srgb,var(--night) 40%,transparent)}
 .round{align-self:stretch;display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--ink-3);margin-top:6px}
 .round::before,.round::after{content:"";flex:1;height:1px;background:var(--line)}
+.day{align-self:stretch;text-align:center;font-size:13px;font-weight:900;letter-spacing:.2em;color:var(--ink);padding:10px 0 2px;animation:rise .35s ease}
 
 /* ---------- vote tally ---------- */
 .tally{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;animation:rise .35s ease}
@@ -130,11 +135,13 @@ body.show-roles .role{display:inline-block}
 /* ---------- win banner ---------- */
 .banner{position:fixed;inset:0;display:none;place-items:center;background:color-mix(in srgb,var(--bg) 70%,transparent);backdrop-filter:blur(4px);z-index:10;padding:16px}
 .banner.on{display:grid;animation:fade .4s ease}
-.banner-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:28px 28px 22px;text-align:center;max-width:420px;width:100%}
+.banner-card{background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:28px 24px 22px;text-align:center;max-width:440px;width:100%}
 .banner-card .kicker{font-size:12px;letter-spacing:.2em;color:var(--ink-3)}
 .banner-card h2{font-size:32px;font-weight:900;color:var(--village);margin:4px 0 6px}
 .banner-card p{font-size:14px;color:var(--ink-2)}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.hidden-reveal{margin:14px auto 0;display:inline-flex;align-items:center;gap:8px;font-size:13px;background:var(--accent-soft);color:var(--ink);border-radius:12px;padding:6px 14px}
+.hidden-reveal b{color:var(--accent);font-size:15px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0}
 .stats div{background:var(--panel-2);border-radius:12px;padding:8px}
 .stats b{display:block;font-size:22px;font-weight:900}
 .stats span{font-size:11px;color:var(--ink-3)}
@@ -149,7 +156,7 @@ body.show-roles .role{display:inline-block}
 <body>
 <div class="app">
   <header>
-    <div class="brand"><h1>AI人狼</h1><span>観戦モード · 6人 · 議論3周</span></div>
+    <div class="brand"><h1>AI人狼</h1><span>観戦モード · 9人村 · 人狼2 · 伏せ札1枚</span></div>
     <div class="controls">
       <button class="btn primary" id="play">⏸ 一時停止</button>
       <button class="btn" id="speed">速度 1×</button>
@@ -161,17 +168,20 @@ body.show-roles .role{display:inline-block}
   <nav class="stepper" id="stepper"></nav>
 
   <div class="main">
-    <section class="panel">
-      <div class="panel-head"><h2>参加者</h2><small id="alive">生存 6 / 6</small></div>
-      <div class="players" id="players"></div>
-      <div class="legend">
-        <span><b>村陣営</b> 占い師・騎士・村人×2</span>
-        <span><b>人狼陣営</b> 人狼・狂人</span>
-      </div>
-    </section>
+    <div class="side">
+      <section class="panel">
+        <div class="panel-head"><h2>参加者</h2><small id="alive">生存 9 / 9</small></div>
+        <div class="players" id="players"></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>役職カード</h2><small>10枚から9枚を配布</small></div>
+        <div class="deck" id="deck"></div>
+        <div class="deck-note"><b>人狼2枚は必ず配られます。</b>残り8枚のうち1枚が伏せ札になり、決着まで誰にも明かされません。</div>
+      </section>
+    </div>
 
     <section class="panel plaza">
-      <div class="panel-head"><h2>広場</h2><small id="count">発言 0 / 18</small></div>
+      <div class="panel-head"><h2>広場</h2><small id="count">発言 0</small></div>
       <div class="log" id="log" aria-live="polite"></div>
     </section>
   </div>
@@ -181,11 +191,12 @@ body.show-roles .role{display:inline-block}
   <div class="banner-card">
     <div class="kicker">GAME SET</div>
     <h2>村陣営の勝利</h2>
-    <p>秘密投票で人狼のソラを処刑しました</p>
+    <p>2日間で人狼2人を処刑しました</p>
+    <div class="hidden-reveal">伏せ札は <b id="hiddenName"></b> でした</div>
     <div class="stats">
-      <div><b>3</b><span>議論の周回</span></div>
-      <div><b>18</b><span>発言数</span></div>
-      <div><b>4:2</b><span>開票結果</span></div>
+      <div><b>2</b><span>日数</span></div>
+      <div><b id="statSaid">0</b><span>発言数</span></div>
+      <div><b>2 / 2</b><span>人狼の処刑</span></div>
     </div>
     <div class="reveal" id="reveal"></div>
     <div style="display:flex;gap:8px;justify-content:center"><button class="btn" id="close">ログを見る</button><button class="btn primary" id="again">↺ もう一度見る</button></div>
@@ -199,48 +210,97 @@ const PLAYERS = [
   {id:"minato",name:"ミナト", color:"#8a5cc2", role:"占い師", side:"v"},
   {id:"sora",  name:"ソラ",   color:"#c7663a", role:"人狼",   side:"w"},
   {id:"rin",   name:"リン",   color:"#c24f86", role:"狂人",   side:"w"},
-  {id:"kai",   name:"カイ",   color:"#2f8f8f", role:"騎士",   side:"v"},
+  {id:"kai",   name:"カイ",   color:"#2f8f8f", role:"霊媒師", side:"v"},
+  {id:"yui",   name:"ユイ",   color:"#b0892a", role:"人狼",   side:"w"},
+  {id:"ren",   name:"レン",   color:"#5a6fd6", role:"村人",   side:"v"},
+  {id:"nagi",  name:"ナギ",   color:"#6f8a3a", role:"村人",   side:"v"},
 ];
 const P = Object.fromEntries(PLAYERS.map(p=>[p.id,p]));
-const STEPS = ["夜0 · 占い","議論 1","議論 2","議論 3","秘密投票","開票","決着"];
+// 公開される10枚。人狼2枚は固定で配られ、残り8枚から1枚が伏せ札になる
+const DECK = [["人狼","w"],["人狼","w"],["狂人","w"],["占い師","v"],["霊媒師","v"],["騎士","v"],["村人","v"],["村人","v"],["村人","v"],["村人","v"]];
+const HIDDEN = "騎士";
+const STEPS = ["夜0 · お告げ","1日目 · 議論","1日目 · 投票","夜1 · 襲撃","2日目 · 議論","2日目 · 投票","決着"];
+const NIGHT_STEPS = [0,3];
 
 // 台本：実際のゲームでは対戦ログ(JSON)から生成する想定
 const W = t=>`<span class="result w">● ${t}</span>`, H = t=>`<span class="result h">○ ${t}</span>`;
+const say = (step,who,text,claim)=>({step,who,text,claim});
 const SCRIPT = [
-  {step:0, sys:"🌙 夜0：占い師が1人を占いました", night:true},
-  {step:1, sys:"☀️ 1日目の朝。全員が生存しています"},
+  {step:0, sys:"🌙 夜0：占い師に、ランダムな1人の「人間」が知らされました", night:true},
+  {step:1, day:"1日目"},
+  {step:1, sys:"☀️ 朝になりました。9人全員が生存しています"},
   {step:1, round:"議論 1周目"},
-  {step:1, who:"aoi",   text:"おはようございます。まずは占い師の方、名乗り出てもらえますか？"},
-  {step:1, who:"minato",text:`占い師です。ソラさんを占って ${W("人狼")} でした。`, claim:true},
-  {step:1, who:"sora",  text:"えっ、僕は村人です。ミナトさんが偽物だと思います。"},
-  {step:1, who:"rin",   text:`占い師は私です。ハルさんを占って ${H("人間")} でした。`, claim:true},
-  {step:1, who:"haru",  text:"占い師が二人……どちらかは偽物ですね。"},
-  {step:1, who:"kai",   text:"お二人とも、なぜその人を占ったのか理由を教えてください。"},
-  {step:2, round:"議論 2周目"},
-  {step:2, who:"minato",text:"ソラさんは開始時の情報が一番少なく、白黒をはっきりさせたかったからです。"},
-  {step:2, who:"rin",   text:"ハルさんを白で確定させて、進行役を任せたかったからです。"},
-  {step:2, who:"sora",  text:"ミナトさんは僕を黒と言って、自分への疑いをそらしていませんか？"},
-  {step:2, who:"aoi",   text:"リンさんの理由は後付けに聞こえます。白判定だけでは村に入る情報が少ないです。"},
-  {step:2, who:"haru",  text:"白と言ってもらえたのはありがたいですが、それだけでリンさんは信用できません。"},
-  {step:2, who:"kai",   text:"黒を出して対立を作るのは、偽物にはリスクが大きい行動です。"},
-  {step:3, round:"議論 3周目"},
-  {step:3, who:"rin",   text:"ミナトさんが偽物なら、ソラさんは濡れ衣です。慎重に決めましょう。"},
-  {step:3, who:"minato",text:"今日ソラさんを処刑すれば、私が本物かどうかははっきりします。"},
-  {step:3, who:"sora",  text:"僕を処刑しても何も出ません。リンさんを信じてください。"},
-  {step:3, who:"aoi",   text:"ソラさんがリンさんを推すのは、仲間をかばっているように見えます。"},
-  {step:3, who:"haru",  text:"ソラさんに投票します。"},
-  {step:3, who:"kai",   text:"僕もソラさんに。ミナトさんの理由のほうが筋が通っています。"},
-  {step:4, sys:"🗳️ 秘密投票：全員が同時に1票を投じます"},
-  {step:4, vote:["aoi","haru","minato","sora","rin","kai"]},
-  {step:5, tally:{aoi:"sora",haru:"sora",minato:"sora",kai:"sora",sora:"minato",rin:"minato"}},
-  {step:5, exec:"sora"},
+  say(1,"aoi",   "伏せ札が1枚ある9人村ですね。まず占い師の方、名乗り出てください。"),
+  say(1,"minato",`占い師です。夜0のお告げで、ハルさんは ${H("人間")} でした。`,"占い師CO"),
+  say(1,"sora",  "占い師が何人出るか、しばらく様子を見たいです。"),
+  say(1,"rin",   `占い師は私です。お告げでは、レンさんが ${H("人間")} でした。`,"占い師CO"),
+  say(1,"haru",  "夜0のお告げはランダムなので、私を白と言われただけではミナトさんの真偽はわかりません。"),
+  say(1,"kai",   "霊媒師です。処刑された人の正体は、翌朝に私がお伝えします。","霊媒師CO"),
+  say(1,"yui",   "霊媒師が一人だけなら、カイさんは信じてよさそうですね。"),
+  say(1,"ren",   "占い師が二人います。今日は二人以外の、まだ判定のない人から選びたいです。"),
+  say(1,"nagi",  "伏せ札が騎士の可能性もあります。夜の襲撃は通る前提で動きましょう。"),
+  {step:1, round:"議論 2周目"},
+  say(1,"aoi",   "まだ判定のない人は、私・ソラさん・ユイさん・ナギさんの4人です。"),
+  say(1,"minato","占い師同士で処刑し合うと情報が減ります。レンさんの案に賛成です。"),
+  say(1,"sora",  "ナギさんは、なぜ騎士が伏せ札だと決めつけるんですか？"),
+  say(1,"rin",   "私もナギさんの発言は少し不自然に感じました。"),
+  say(1,"haru",  "ソラさんは様子見ばかりで、まだ自分の意見を出していませんね。"),
+  say(1,"kai",   "ナギさんは決めつけてはいません。備えようと言っただけです。"),
+  say(1,"yui",   "ソラさんは慎重なだけだと思います。私はナギさんが気になります。"),
+  say(1,"ren",   "ユイさん、ソラさんをかばう理由は何でしょう？"),
+  say(1,"nagi",  "ソラさんとユイさんが、互いに守り合っているように見えます。"),
+  {step:1, round:"議論 3周目"},
+  say(1,"aoi",   "ソラさんに投票します。"),
+  say(1,"minato","私もソラさんです。"),
+  say(1,"sora",  "僕は村人です。ナギさんを処刑するべきです。"),
+  say(1,"rin",   "私はナギさんに入れます。"),
+  say(1,"haru",  "ソラさんに入れます。"),
+  say(1,"kai",   "ソラさんに。明日の朝、結果をお伝えします。"),
+  say(1,"yui",   "ソラさんではなく、ナギさんに入れます。"),
+  say(1,"ren",   "ソラさんに投票します。"),
+  say(1,"nagi",  "ソラさんです。"),
+  {step:2, sys:"🗳️ 秘密投票：全員が同時に1票を投じます"},
+  {step:2, vote:true},
+  {step:2, tally:{aoi:"sora",minato:"sora",haru:"sora",kai:"sora",ren:"sora",nagi:"sora",sora:"nagi",rin:"nagi",yui:"nagi"}},
+  {step:2, dead:"sora", how:"処刑"},
+  {step:3, sys:"🌙 夜1：占い師は占い、霊媒師は結果を受け取り、人狼は襲撃先を選びます", night:true},
+  {step:4, day:"2日目"},
+  {step:4, dead:"minato", how:"襲撃"},
+  {step:4, round:"議論 1周目"},
+  say(4,"aoi",   "ミナトさんが襲撃されました。本物の占い師だったから狙われたのでは。"),
+  say(4,"haru",  "騎士が伏せ札だったのか、守りが外れたのか、どちらかですね。"),
+  say(4,"rin",   `占い結果です。アオイさんは ${H("人間")} でした。`),
+  say(4,"kai",   `霊媒結果です。昨日処刑したソラさんは ${W("人狼")} でした。`),
+  say(4,"yui",   "襲撃はかく乱かもしれません。リンさんが本物の可能性も残っています。"),
+  say(4,"ren",   "人狼は2人なので、残りはあと1人です。"),
+  say(4,"nagi",  "昨日ソラさんに入れなかったのは、ソラさん本人・リンさん・ユイさんの3人です。"),
+  {step:4, round:"議論 2周目"},
+  say(4,"aoi",   "人狼が1人残っているなら、昨日ソラさんをかばった人が一番怪しいです。"),
+  say(4,"haru",  "リンさんが偽の占い師なら、狂人か人狼のどちらかですね。"),
+  say(4,"rin",   "私は本物です。昨日ユイさんを占っておくべきでした。"),
+  say(4,"kai",   "リンさん、昨日ナギさんに入れた理由をもう一度聞かせてください。"),
+  say(4,"yui",   "私はナギさんが怪しいと思っていただけで、ソラさんの仲間ではありません。"),
+  say(4,"ren",   "もう一人の人狼は、ユイさんかリンさんのどちらかだと思います。"),
+  say(4,"nagi",  "狂人を処刑しても村は勝てません。人狼の可能性が高いのはユイさんです。"),
+  {step:4, round:"議論 3周目"},
+  say(4,"aoi",   "ユイさんに投票します。"),
+  say(4,"haru",  "ユイさんです。"),
+  say(4,"rin",   "私はナギさんに入れます。"),
+  say(4,"kai",   "ユイさんに入れます。"),
+  say(4,"yui",   "考え直してください。私はナギさんに入れます。"),
+  say(4,"ren",   "ユイさんです。"),
+  say(4,"nagi",  "ユイさんに投票します。"),
+  {step:5, sys:"🗳️ 秘密投票：全員が同時に1票を投じます"},
+  {step:5, vote:true},
+  {step:5, tally:{aoi:"yui",haru:"yui",kai:"yui",ren:"yui",nagi:"yui",rin:"nagi",yui:"nagi"}},
+  {step:5, dead:"yui", how:"処刑"},
   {step:6, sys:"🏆 人狼がいなくなりました。村陣営の勝利です"},
   {step:6, win:true},
 ];
 
 const $ = s=>document.querySelector(s);
 const logEl = $("#log"), playersEl = $("#players"), stepperEl = $("#stepper");
-let i = 0, timer = null, playing = true, speed = 1, said = 0;
+let i = 0, timer = null, playing = true, speed = 1, said = 0, dead = new Set();
 
 function renderPlayers(){
   playersEl.innerHTML = PLAYERS.map(p=>`
@@ -253,61 +313,81 @@ function renderPlayers(){
       <div class="votes-in" id="v-${p.id}"></div>
     </div>`).join("");
 }
+function renderDeck(open){
+  let hiddenShown = false;
+  $("#deck").innerHTML = DECK.map(([name,side])=>{
+    if(name===HIDDEN && !hiddenShown){ hiddenShown = true;
+      return `<span class="rc hidden ${open?"open":""}">${open?`伏せ札：${name}`:"伏せ札 ？"}</span>`; }
+    return `<span class="rc ${side}">${name}</span>`;
+  }).join("");
+}
 function renderStepper(cur){
-  stepperEl.innerHTML = STEPS.map((s,k)=>`<div class="step ${k<cur?"done":""} ${k===cur?"now":""} ${k===cur&&k===0?"night":""}">${s}</div>`).join("");
-  const now = stepperEl.querySelector(".now"); now && now.scrollIntoView({inline:"center",block:"nearest",behavior:"smooth"});
+  stepperEl.innerHTML = STEPS.map((s,k)=>`<div class="step ${k<cur?"done":""} ${k===cur?"now":""} ${k===cur&&NIGHT_STEPS.includes(k)?"night":""}">${s}</div>`).join("");
+  const now = stepperEl.querySelector(".now");
+  if(now) stepperEl.scrollTo({left:now.offsetLeft-stepperEl.clientWidth/2+now.clientWidth/2,behavior:"smooth"});
 }
 function addTag(id,cls,text){
   const s = $("#s-"+id); if(s.querySelector("."+cls)) return;
   s.insertAdjacentHTML("beforeend",`<span class="tag ${cls}">${text}</span>`);
+}
+function clearVotes(){
+  document.querySelectorAll(".tag.voted").forEach(t=>t.remove());
+  document.querySelectorAll(".votes-in").forEach(v=>v.classList.remove("on"));
 }
 function push(html){ logEl.insertAdjacentHTML("beforeend",html); logEl.scrollTop = logEl.scrollHeight; }
 
 function run(ev){
   renderStepper(ev.step);
   document.querySelectorAll(".card.speaking").forEach(c=>c.classList.remove("speaking"));
+  if(ev.day){ clearVotes(); push(`<div class="day">${ev.day}</div>`); }
   if(ev.sys)   push(`<div class="sys ${ev.night?"night":""}">${ev.sys}</div>`);
   if(ev.round) push(`<div class="round">${ev.round}</div>`);
   if(ev.who){
     const p = P[ev.who]; said++;
-    $("#count").textContent = `発言 ${said} / 18`;
+    $("#count").textContent = `発言 ${said}`;
     $("#c-"+p.id).classList.add("speaking");
-    if(ev.claim) addTag(p.id,"claim","占い師CO");
+    if(ev.claim) addTag(p.id,"claim",ev.claim);
     push(`<div class="msg" style="--pc:${p.color}"><div class="avatar">${p.name[0]}</div>
-      <div class="bubble"><div class="who">${p.name}${ev.claim?'<span class="tag claim">占い師CO</span>':""}</div><p>${ev.text}</p></div></div>`);
+      <div class="bubble"><div class="who">${p.name}${ev.claim?`<span class="tag claim">${ev.claim}</span>`:""}</div><p>${ev.text}</p></div></div>`);
   }
-  if(ev.vote) ev.vote.forEach(id=>addTag(id,"voted","投票済 ✓"));
+  if(ev.vote) PLAYERS.filter(p=>!dead.has(p.id)).forEach(p=>addTag(p.id,"voted","投票済 ✓"));
   if(ev.tally){
-    const n = {}; Object.values(ev.tally).forEach(t=>n[t]=(n[t]||0)+1);
+    const voters = Object.keys(ev.tally).length, n = {};
+    Object.values(ev.tally).forEach(t=>n[t]=(n[t]||0)+1);
     const rows = Object.entries(n).sort((a,b)=>b[1]-a[1]);
-    push(`<div class="tally"><h3>開票結果</h3>
-      ${rows.map(([t,c],k)=>`<div class="tally-row ${k?"low":""}"><span>${P[t].name}</span><div class="bar"><i data-w="${c/6*100}"></i></div><b>${c}</b></div>`).join("")}
+    push(`<div class="tally"><h3>開票結果（${voters}票）</h3>
+      ${rows.map(([t,c],k)=>`<div class="tally-row ${k?"low":""}"><span>${P[t].name}</span><div class="bar"><i data-w="${c/voters*100}"></i></div><b>${c}</b></div>`).join("")}
       <div class="arrows">${Object.entries(ev.tally).map(([f,t])=>`<span class="arrow">${P[f].name} → ${P[t].name}</span>`).join("")}</div></div>`);
     requestAnimationFrame(()=>requestAnimationFrame(()=>logEl.querySelectorAll(".bar i").forEach(b=>b.style.width=b.dataset.w+"%")));
     rows.forEach(([t,c])=>{const v=$("#v-"+t); v.textContent=c; v.classList.add("on");});
   }
-  if(ev.exec){
-    const p = P[ev.exec];
-    $("#c-"+p.id).classList.add("dead"); addTag(p.id,"exec","処刑");
-    $("#alive").textContent = "生存 5 / 6";
-    push(`<div class="sys">⚖️ ${p.name}が処刑されました。正体は <span class="result w">● ${p.role}</span></div>`);
+  if(ev.dead){
+    const p = P[ev.dead]; dead.add(p.id);
+    $("#c-"+p.id).classList.add("dead"); addTag(p.id,"dead",ev.how);
+    $("#alive").textContent = `生存 ${9-dead.size} / 9`;
+    push(ev.how==="処刑"
+      ? `<div class="sys">⚖️ ${p.name}が処刑されました。正体は霊媒師だけが知ります</div>`
+      : `<div class="sys">🐺 ${p.name}が襲撃され、朝に見つかりました</div>`);
   }
   if(ev.win){
+    renderDeck(true);
+    $("#hiddenName").textContent = HIDDEN;
+    $("#statSaid").textContent = said;
     $("#reveal").innerHTML = PLAYERS.map(p=>`<span class="tag ${p.side==="w"?"role-w":"role-v"}">${p.name}：${p.role}</span>`).join("");
     $("#banner").classList.add("on");
   }
 }
-function delay(ev){ return (ev.who ? 1700 + ev.text.length*28 : ev.tally ? 2600 : 1100) / speed; }
+function delay(ev){ return (ev.who ? 1500 + ev.text.length*26 : ev.tally ? 2600 : 1100) / speed; }
 function tick(){
   if(!playing || i>=SCRIPT.length) return;
   const ev = SCRIPT[i++]; run(ev);
   timer = setTimeout(tick, delay(ev));
 }
 function restart(){
-  clearTimeout(timer); i=0; said=0;
+  clearTimeout(timer); i=0; said=0; dead=new Set();
   logEl.innerHTML=""; $("#banner").classList.remove("on");
-  $("#alive").textContent="生存 6 / 6"; $("#count").textContent="発言 0 / 18";
-  renderPlayers(); renderStepper(0);
+  $("#alive").textContent="生存 9 / 9"; $("#count").textContent="発言 0";
+  renderPlayers(); renderDeck(false); renderStepper(0);
   playing=true; $("#play").textContent="⏸ 一時停止"; tick();
 }
 function togglePlay(){
