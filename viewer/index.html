@@ -58,7 +58,7 @@ fetch(`../works/${topic}/manifest.json`, { cache: 'no-store' })
 function render() {
   const portrait = document.body.classList.contains('portrait');
   const n = entries.length;
-  const cols = portrait ? (n <= 2 ? 1 : 2) : Math.ceil(Math.sqrt(n * 16 / 9 * 0.6));
+  const cols = portrait ? (n <= 2 ? 1 : 2) : n <= 2 ? n : n <= 4 ? 2 : n <= 6 ? 3 : 4;
   const rows = Math.ceil(n / cols);
   grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
   grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
@@ -75,9 +75,12 @@ function render() {
 }
 
 function restart() {
-  const src = entries.map(e => `../works/${topic}/${e.file}?t=${Date.now()}`);
-  grid.querySelectorAll('iframe').forEach((f, i) => { f.src = src[i]; });
-  startedAt = performance.now();
+  // レイアウト確定後に読み込む（サイズ0のまま起動してキャンバスが空になる作品があるため）
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    const src = entries.map(e => `../works/${topic}/${e.file}?t=${Date.now()}`);
+    grid.querySelectorAll('iframe').forEach((f, i) => { f.src = src[i]; });
+    startedAt = performance.now();
+  }));
 }
 
 (function tick() {
